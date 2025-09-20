@@ -72,6 +72,10 @@ type RoomData struct {
 	UserName string
 }
 
+type NotFoundData struct {
+	Home string
+}
+
 var (
 	rooms      = map[string]*Room{}
 	mu         sync.Mutex
