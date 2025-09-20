@@ -67,11 +67,13 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 	mu.Lock()
 	room, ok := rooms[roomID]
 	mu.Unlock()
+
 	if !ok {
-		http.NotFound(w, r)
+		log.Print("Invalid or missing room: " + roomID)
+		w.WriteHeader(http.StatusNotFound)
+		templates.ExecuteTemplate(w, "not_found.html", nil)
 		return
 	}
-
 	room.Lock.Lock()
 	defer room.Lock.Unlock()
 
