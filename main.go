@@ -28,25 +28,40 @@ type Room struct {
 }
 
 var (
-	rooms = map[string]*Room{}
-	mu    sync.Mutex
+	rooms      = map[string]*Room{}
+	mu         sync.Mutex
+	hostPrefix string
 )
 
 // --- Handlers ---
 func indexHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("indexHandler: %s %s", r.Method, r.URL.String())
 	if r.Method == http.MethodPost {
+		log.Printf("POST method recieved'....")
+		// Generate unique room ID
 		roomID := strconv.FormatInt(time.Now().UnixNano(), 36)
+
 		mu.Lock()
 		rooms[roomID] = &Room{ID: roomID}
 		mu.Unlock()
-		http.Redirect(w, r, "/room/"+roomID, http.StatusSeeOther)
+
+		// Relative redirect (prefix-agnostic)
+		http.Redirect(w, r, hostPrefix+"/room/"+roomID, http.StatusSeeOther)
 		return
 	}
-	templates.ExecuteTemplate(w, "index.html", nil)
+
+	if err := templates.ExecuteTemplate(w, "index.html", nil); err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
 }
 
 func roomHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("roomHandler: %s %s", r.Method, r.URL.String())
+
+	// Correct slice for roomID
 	roomID := r.URL.Path[len("/room/"):]
+	log.Printf("room id is %s", roomID)
+
 	mu.Lock()
 	room, ok := rooms[roomID]
 	mu.Unlock()
@@ -55,24 +70,25 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == http.MethodPost {
-		name := r.FormValue("name")
-		dice := rand.Intn(6) + 1
-		entry := name + " rolled a " + strconv.Itoa(dice)
-
-		room.Lock.Lock()
-		room.Log = append(room.Log, entry)
-		room.Lock.Unlock()
-	}
-
 	room.Lock.Lock()
 	defer room.Lock.Unlock()
-	templates.ExecuteTemplate(w, "room.html", room)
+
+	if r.Method == http.MethodPost {
+		name := r.FormValue("name")
+		dice := rand.Intn(20) + 1
+		entry := fmt.Sprintf("%s rolled a %d", name, dice)
+		room.Log = append(room.Log, entry)
+	}
+
+	if err := templates.ExecuteTemplate(w, "room.html", room); err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
 }
 
 func main() {
-	fmt.Println("Dice Room begins")
+	fmt.Println("Dice Room begins...")
 	args, err := ReadArgs()
+	hostPrefix = args.HostPrefix //set the hostPrefix globally.
 	if err != nil {
 		log.Fatal("Error parsing args: ", err)
 	}
@@ -83,11 +99,12 @@ func main() {
 	fs := http.FileServer(http.FS(content))
 	http.Handle("/static/", fs)
 
+	// Handlers
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/room/", roomHandler)
 
 	portStr := strconv.Itoa(args.Port)
 	log.Println("Listening on " + portStr)
-	fmt.Println("Dice room is ready.")
+	fmt.Println("Dice room is ready.") //<-- Healthy Regex
 	log.Fatal(http.ListenAndServe(":"+portStr, nil))
 }
