@@ -3,19 +3,17 @@
 <head>
   <meta charset="utf-8">
   <title>Room {{.ID}}</title>
-  <script src="./static/app.js" defer></script>
+  <link rel="stylesheet" href="{{static "style.css"}}">
+  <script src="{{static "app.js"}}" defer></script>
 </head>
 <body>
-  <h1>Room {{.ID}}</h1>
+  <h1>Room #{{.ID}}</h1>
 
-<form method="post" action="">
-  <input type="hidden" name="action" value="roll">
-  <label>
-    Description (optional):
-    <input type="text" name="desc" placeholder="What is this roll for?">
-  </label>
-  <button type="submit">Roll Dice</button>
-</form>
+  <form method="post" action="">
+    <input type="hidden" name="action" value="roll">
+    <input type="text" name="desc" placeholder="What is this roll for? (optional)">
+    <button type="submit">Roll d20</button>
+  </form>
 
   <h2>Log</h2>
   <ul>

@@ -18,7 +18,12 @@ import (
 //go:embed static/*
 var content embed.FS
 
-var templates = template.Must(template.ParseFS(content, "templates/*.html"))
+var templates = template.Must(template.New("").Funcs(template.FuncMap{
+	"static": func(path string) string {
+		// Always resolve to absolute `/static/...`
+		return hostPrefix + "/static/" + path
+	},
+}).ParseFS(content, "templates/*.html"))
 
 // --- In-memory state ---
 type Room struct {
