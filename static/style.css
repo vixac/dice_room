@@ -53,6 +53,12 @@ button {
   transition: background 0.2s;
 }
 
+.container {
+  padding: 0 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 button:hover {
   background-color: #1ed760;
 }
