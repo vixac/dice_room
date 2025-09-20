@@ -8,10 +8,14 @@
 <body>
   <h1>Room {{.ID}}</h1>
 
-  <form method="post" action="">
-      <input type="hidden" name="action" value="roll">
-    <button type="submit">Roll Dice</button>
-  </form>
+<form method="post" action="">
+  <input type="hidden" name="action" value="roll">
+  <label>
+    Description (optional):
+    <input type="text" name="desc" placeholder="What is this roll for?">
+  </label>
+  <button type="submit">Roll Dice</button>
+</form>
 
   <h2>Log</h2>
   <ul>

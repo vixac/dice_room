@@ -100,13 +100,18 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// User has a name now, handle dice roll
 	if r.Method == http.MethodPost && r.FormValue("action") == "roll" {
+		desc := r.FormValue("desc")
 		dice := rand.Intn(20) + 1
-		entry := fmt.Sprintf("%s rolled a %d", userName, dice)
+		timestamp := time.Now().Format("15:04:05") // HH:MM:SS
+
+		entry := fmt.Sprintf("[%s] %s rolled a %d", timestamp, userName, dice)
+		if desc != "" {
+			entry += fmt.Sprintf(" (%s)", desc)
+		}
+
 		room.Log = append(room.Log, entry)
 	}
-
 	templates.ExecuteTemplate(w, "room.html", room)
 }
 
