@@ -8,13 +8,26 @@
   <script src="{{static "app.js"}}" defer></script>
 </head>
 <body>
-  <h1>Room #{{.ID}}</h1>
+  <h1>Room "{{.ID}}"</h1>
+  
+  {{ if .UserName }}
+  <h2>Welcome {{.UserName}}</h2>
+    <!-- Roll form -->
+    <form method="post" action="">
+      <input type="hidden" name="action" value="roll">
+      <input type="text" name="desc" placeholder="What is this roll for? (optional)">
+      <button type="submit">Roll Dice</button>
+    </form>
+  {{ else }}
+    
+         <!-- Join form -->
+    <form method="post" action="">
+      <input type="hidden" name="action" value="join">
+      <input type="text" name="name" placeholder="Enter your name" required>
+      <button type="submit">Enter Room</button>
+    </form>
 
-  <form method="post" action="">
-    <input type="hidden" name="action" value="roll">
-    <input type="text" name="desc" placeholder="What is this roll for? (optional)">
-    <button type="submit">Roll d20</button>
-  </form>
+  {{ end }}
 
   <h2>Log</h2>
   <ul>
@@ -23,4 +36,19 @@
     {{end}}
   </ul>
 </body>
+
+  <!-- Live updates -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const logList = document.querySelector("ul");
+  const roomId = "{{.ID}}";
+
+  const evtSource = new EventSource(`/tbc/dice_room/events/${roomId}`);
+  evtSource.onmessage = (event) => {
+    const li = document.createElement("li");
+    li.textContent = event.data;
+    logList.appendChild(li);
+  };
+});
+</script>
 </html>
