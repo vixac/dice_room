@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"fmt"
 	"html/template"
 	"log"
 	"math/rand"
@@ -12,6 +13,7 @@ import (
 )
 
 // --- Embed assets ---
+//
 //go:embed templates/*
 //go:embed static/*
 var content embed.FS
@@ -69,6 +71,12 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	fmt.Println("Dice Room begins")
+	args, err := ReadArgs()
+	if err != nil {
+		log.Fatal("Error parsing args: ", err)
+	}
+
 	rand.Seed(time.Now().UnixNano())
 
 	// Serve static files
@@ -78,6 +86,8 @@ func main() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/room/", roomHandler)
 
-	log.Println("Listening on :8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	portStr := strconv.Itoa(args.Port)
+	log.Println("Listening on " + portStr)
+	fmt.Println("Dice room is ready.")
+	log.Fatal(http.ListenAndServe(":"+portStr, nil))
 }
