@@ -8,9 +8,8 @@
 <body>
   <h1>Room {{.ID}}</h1>
 
-  <!-- Post to current URL -->
   <form method="post" action="">
-    <input type="text" name="name" placeholder="Your name" required>
+      <input type="hidden" name="action" value="roll">
     <button type="submit">Roll Dice</button>
   </form>
 

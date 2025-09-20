@@ -45,7 +45,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		rooms[roomID] = &Room{ID: roomID}
 		mu.Unlock()
 
-		// Relative redirect (prefix-agnostic)
 		http.Redirect(w, r, hostPrefix+"/room/"+roomID, http.StatusSeeOther)
 		return
 	}
@@ -57,8 +56,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func roomHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("roomHandler: %s %s", r.Method, r.URL.String())
-
-	// Correct slice for roomID
 	roomID := r.URL.Path[len("/room/"):]
 	log.Printf("room id is %s", roomID)
 
@@ -73,16 +70,44 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 	room.Lock.Lock()
 	defer room.Lock.Unlock()
 
-	if r.Method == http.MethodPost {
-		name := r.FormValue("name")
+	// Check if user already has a name in cookie
+	var userName string
+	cookie, err := r.Cookie("username")
+	if err == nil {
+		userName = cookie.Value
+	}
+
+	if userName == "" {
+		// No name yet
+		if r.Method == http.MethodPost {
+			userName = r.FormValue("name")
+			if userName == "" {
+				http.Error(w, "Name required", http.StatusBadRequest)
+				return
+			}
+			// Set cookie
+			http.SetCookie(w, &http.Cookie{
+				Name:  "username",
+				Value: userName,
+				Path:  "/", // prefix-agnostic
+			})
+		} else {
+			// Show name entry form
+			if err := templates.ExecuteTemplate(w, "enter_name.html", nil); err != nil {
+				http.Error(w, "Template error", http.StatusInternalServerError)
+			}
+			return
+		}
+	}
+
+	// User has a name now, handle dice roll
+	if r.Method == http.MethodPost && r.FormValue("action") == "roll" {
 		dice := rand.Intn(20) + 1
-		entry := fmt.Sprintf("%s rolled a %d", name, dice)
+		entry := fmt.Sprintf("%s rolled a %d", userName, dice)
 		room.Log = append(room.Log, entry)
 	}
 
-	if err := templates.ExecuteTemplate(w, "room.html", room); err != nil {
-		http.Error(w, "Template error", http.StatusInternalServerError)
-	}
+	templates.ExecuteTemplate(w, "room.html", room)
 }
 
 func main() {
