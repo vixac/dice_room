@@ -60,11 +60,39 @@ function applyLogColors() {
     }
   }
 }
+// --- Append a new entry to the log ---
+function appendLogEntry(m, logList) {
+  const li = document.createElement("li");
+  li.className = "log-entry";
+  li.innerHTML = `
+    <span class="username" data-name="${m.user}">${m.user}</span>
+    rolled a
+    <span class="dice" data-dice="${m.dice}">${m.dice}</span>:
+    <span class="result">${m.result}</span>
+    <span class="time">${m.time}</span>
+    ${m.desc ? `<div class="desc">(${m.desc})</div>` : ""}
+  `;
+  logList.appendChild(li);
+  applyLogColors();
+  logList.scrollTop = logList.scrollHeight;
+}
 
+// --- Initialize on page load ---
 document.addEventListener("DOMContentLoaded", () => {
-  const diceSelect = document.getElementById("dice");
-  if (diceSelect) {
-    diceSelect.addEventListener("change", applyLogColors);
-    applyLogColors(); // initial
-  }
+  const logList = document.getElementById("log");
+  if (!logList) return; // e.g. username entry page
+
+  // Style server-rendered entries immediately
+  applyLogColors();
+
+  // Connect to SSE
+  const evtSource = new EventSource(HOST_PREFIX + `/events/${ROOM_ID}`);
+  evtSource.onmessage = (event) => {
+    try {
+      const m = JSON.parse(event.data);
+      appendLogEntry(m, logList);
+    } catch (err) {
+      console.error("Invalid SSE payload", event.data, err);
+    }
+  };
 });

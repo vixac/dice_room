@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dice Room {{.ID}}</title>
   <link rel="stylesheet" href="{{static "style.css"}}">
+  <script>const ROOM_ID = "{{.ID}}";</script>
+  <script>const HOST_PREFIX = "{{.HostPrefix}}";</script>
   <script src="{{static "app.js"}}" defer></script>
 </head>
 <body>
@@ -45,25 +47,20 @@
 
   <h2>Rolls</h2>
   <ul id="log">
-    {{range .Log}}
-    <li>{{. | safeHTML}}</li>
-    {{end}}
+  {{range .Log}}
+    <li class="log-entry">
+      <span class="username" data-name="{{.User}}">{{.User}}</span>
+      <span class="meta"> rolled a</span>
+      <span class="dice" data-dice="{{.Dice}}">{{.Dice}}</span>
+      <span class="meta"> = </span>
+      <span class="result">{{.Result}}</span>
+      {{if .Desc}} <span class="desc">({{.Desc}})</span> {{end}}
+      <span class="time">{{.Time}}</span>
+    </li>
+  {{end}}
   </ul>
    </div>
 </body>
 
-  <!-- Live updates -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const logList = document.querySelector("ul");
-  const roomId = "{{.ID}}";
 
-  const evtSource = new EventSource(`/tbc/dice_room/events/${roomId}`);
-  evtSource.onmessage = (event) => {
-    const li = document.createElement("li");
-    li.textContent = event.data;
-    logList.appendChild(li);
-  };
-});
-</script>
 </html>

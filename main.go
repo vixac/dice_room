@@ -2,6 +2,7 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -22,7 +23,6 @@ var (
 
 func eventsHandler(w http.ResponseWriter, r *http.Request) {
 	roomID := strings.TrimPrefix(r.URL.Path, "/events/")
-
 	flusher, ok := w.(http.Flusher)
 	if !ok {
 		http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
@@ -33,15 +33,31 @@ func eventsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 
-	ch := make(subscriber, 10)
+	ch := make(chan string, 16)
 
 	subMu.Lock()
 	subscribers[roomID] = append(subscribers[roomID], ch)
 	subMu.Unlock()
 
-	// Stream messages
-	for msg := range ch {
-		fmt.Fprintf(w, "data: %s\n\n", msg)
+	// remove subscriber on disconnect
+	go func() {
+		<-r.Context().Done()
+		subMu.Lock()
+		defer subMu.Unlock()
+		arr := subscribers[roomID]
+		for i := range arr {
+			if arr[i] == ch {
+				subscribers[roomID] = append(arr[:i], arr[i+1:]...)
+				break
+			}
+		}
+		close(ch)
+	}()
+
+	// send any missed messages? (optional)
+	// Stream new messages from the channel
+	for m := range ch {
+		fmt.Fprintf(w, "data: %s\n\n", m) // m is JSON
 		flusher.Flush()
 	}
 }
@@ -66,15 +82,16 @@ var templates = template.Must(template.New("").Funcs(template.FuncMap{
 // --- In-memory state ---
 type Room struct {
 	ID   string
-	Log  []string
+	Log  []LogEntry
 	Lock sync.Mutex
 }
 
 type RoomData struct {
 	ID           string
-	Log          []string
+	Log          []LogEntry
 	UserName     string
 	SelectedDice string
+	HostPrefix   string
 }
 
 type NotFoundData struct {
@@ -86,6 +103,14 @@ var (
 	mu         sync.Mutex
 	hostPrefix string
 )
+
+type LogEntry struct {
+	User   string `json:"user"`
+	Dice   string `json:"dice"`
+	Result int    `json:"result"`
+	Desc   string `json:"desc,omitempty"`
+	Time   string `json:"time"`
+}
 
 // --- Handlers ---
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -160,37 +185,35 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 				selectedDice = diceType
 			}
 			dice := rand.Intn(sides) + 1
-			descStr := desc
-			entry := fmt.Sprintf(
-				`<span class="log-entry">
-       <span class="username" data-name="%s">%s</span>
-       rolled a <span class="dice" data-dice="%s">%s</span> =
-       <span class="result">%d</span>
-       %s
-       <span class="time">%s</span>
-     </span>`,
-				userName, userName,
-				diceType, diceType,
-				dice,
-				descStr,
-				time.Now().Format("15:04:05"),
-			)
-			room.Log = append(room.Log, entry)
-			subMu.Lock()
-			for _, ch := range subscribers[roomID] {
-				select {
-				case ch <- entry:
-				default:
-					// if a subscriber is stuck, skip
-				}
+
+			entry := LogEntry{
+				User:   userName,
+				Dice:   diceType,
+				Result: dice,
+				Desc:   desc, // user text; we'll not treat it as HTML
+				Time:   time.Now().Format("15:04:05"),
 			}
-			subMu.Unlock()
+			room.Log = append(room.Log, entry)
+			b, err := json.Marshal(entry)
+			if err == nil {
+				msg := string(b)
+				subMu.Lock()
+				for _, ch := range subscribers[roomID] {
+					select {
+					case ch <- msg:
+					default:
+						// if a subscriber is stuck, skip
+					}
+				}
+				subMu.Unlock()
+			}
+
 		}
 	} else {
 		fmt.Println("This was not a post.")
 	}
 
-	roomData := RoomData{ID: roomID, Log: room.Log, UserName: userName, SelectedDice: selectedDice}
+	roomData := RoomData{ID: roomID, Log: room.Log, UserName: userName, SelectedDice: selectedDice, HostPrefix: hostPrefix}
 
 	templates.ExecuteTemplate(w, "room.html", roomData)
 }
