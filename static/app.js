@@ -51,13 +51,12 @@ function applyLogColors() {
   if (diceSelect) {
     const dice = diceSelect.value;
     if (diceColors[dice]) {
-      diceSelect.style.color = "#fff"; // text color
       diceSelect.style.borderColor = diceColors[dice]; // ✅ match border
       diceSelect.style.backgroundColor = diceColors[dice]; // background
     } else {
       diceSelect.style.backgroundColor = "#222"; // fallback dark bg
-      diceSelect.style.borderColor = "#444"; // subtle fallback border
-      diceSelect.style.color = "#fff";
+       diceSelect.style.borderColor = "#444"; // subtle fallback border
+      
     }
   }
 }

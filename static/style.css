@@ -46,7 +46,7 @@ button {
   border: none;
   border-radius: 6px;
   background-color: #1db954;
-  color: #fff;
+  color: #000;
   font-weight: bold;
   font-size: 1rem;
   cursor: pointer;
@@ -87,7 +87,8 @@ select {
   border: 0px;
   width: 80px;
   background-color: #222; /* neutral dark default */
-  color: #fff;
+  
+  color: #000; /* ✅ make the text black */
   appearance: none; /* hide default arrow on most browsers */
   cursor: pointer;
   margin-right: 10px;
