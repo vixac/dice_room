@@ -10,14 +10,13 @@
   <script src="{{static "app.js"}}" defer></script>
 </head>
 <body>
-      <div class="container"></div>
-  <h1>Dice Room {{.ID}}</h1>
+  <div class="container"></div>
   <a href=".." style="color:blue";>Home</a>
-  {{ if .UserName }}
-  <h2>Welcome {{.UserName}}</h2>
+  <h1>Room: {{.RoomName}}</h1>
+    {{ if .UserName }}
+    <h2>Welcome {{.UserName}}</h2>
     <!-- Roll form -->
     <form method="post" action="">
-
       <input type="hidden" name="action" value="roll">
        <input type="hidden" name="username" value="{{.UserName}}">
       <input type="text" name="desc" placeholder="What is this roll for? (optional)">
@@ -30,9 +29,12 @@
   <option value="d8"  {{if eq .SelectedDice "d8"}}selected{{end}}>d8</option>
   <option value="d10" {{if eq .SelectedDice "d10"}}selected{{end}}>d10</option>
   <option value="d12" {{if eq .SelectedDice "d12"}}selected{{end}}>d12</option>
+  <option value="d100" {{if eq .SelectedDice "d100"}}selected{{end}}>d100</option>
 </select>
+ <div class="spacer"></div>
+<button type="submit">Roll Dice</button>
         </div>
-      <button type="submit">Roll Dice</button>
+      
     </form>
       <h2>Rolls</h2>
 <ul id="log">

@@ -109,11 +109,15 @@ select {
   transition: background-color 0.2s, color 0.2s;
 }
 
+.spacer {
+  flex: 1;
+}
 .dice-d4   { color: #ff6b6b; }  /* reddish */
 .dice-d6   { color: #4dabf7; }  /* blue */
 .dice-d8   { color: #51cf66; }  /* green */
 .dice-d10  { color: #f59f00; }  /* amber */
 .dice-d12  { color: #845ef7; }  /* purple */
+.dice-d100 { color: #faf812; }  /* lime */
 .dice-d20  { color: #22b8cf; }  /* cyan */
 
 select:hover {

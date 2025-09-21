@@ -37,6 +37,7 @@ const diceColors = {
   d8: "#ffeb3b",   // yellow
   d10: "#03a9f4",  // blue
   d12: "#9c27b0",  // purple
+  d100: "#77ff01",  // lime
   d20: "#1db954",  // spotify green
 };
 
@@ -48,13 +49,10 @@ function applyLogColors() {
   document.querySelectorAll(".dice").forEach(el => {
     
     const dice = el.dataset.dice;
-    console.log("Looking at dice " + dice);
     if (diceColors[dice]) {
-        console.log("Modifying style for " + dice);
          el.style.backgroundColor = diceColors[dice];
          el.style.color = "#121212";
     } else {
-        console.log("Missing style for " + dice);
         el.style.backgroundColor = "#ffffff";
     }
   });

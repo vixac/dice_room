@@ -88,13 +88,15 @@ var templates = template.Must(template.New("").Funcs(template.FuncMap{
 
 // --- In-memory state ---
 type Room struct {
-	ID   string
-	Log  []LogEntry
-	Lock sync.Mutex
+	ID       string
+	RoomName string
+	Log      []LogEntry
+	Lock     sync.Mutex
 }
 
 type RoomData struct {
 	ID           string
+	RoomName     string
 	Log          []LogEntry
 	UserName     string
 	SelectedDice string
@@ -125,10 +127,15 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		log.Printf("POST method recieved'....")
 		// Generate unique room ID
+		r.ParseForm()
+		roomName := strings.TrimSpace(r.FormValue("roomName"))
 		roomID := strconv.FormatInt(time.Now().UnixNano(), 36)
-
+		log.Printf("POST method recieved'....name is: " + roomName)
 		mu.Lock()
-		rooms[roomID] = &Room{ID: roomID}
+		if roomName == "" {
+			roomName = roomID
+		}
+		rooms[roomID] = &Room{ID: roomID, RoomName: roomName}
 		mu.Unlock()
 
 		http.Redirect(w, r, hostPrefix+"/room/"+roomID, http.StatusSeeOther)
@@ -160,13 +167,19 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 
 	var userName string = ""
 	var selectedDice = "d20"
+	// Try to read from cookie first
+	if cookie, err := r.Cookie("username"); err == nil {
+		userName = cookie.Value
+	}
+	if cookie, err := r.Cookie("selectedDice"); err == nil {
+		selectedDice = cookie.Value
+	}
 	if r.Method == http.MethodPost {
 		action := r.FormValue("action")
 		fmt.Println("action is " + action)
 		switch action {
 		case "join":
 			userName = r.FormValue("name")
-
 			// store in cookie or session
 			http.SetCookie(w, &http.Cookie{
 				Name:  "username",
@@ -174,15 +187,15 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 				Path:  "/",
 			})
 		case "roll":
-			userCookie, err := r.Cookie("username")
-			if err != nil {
-				http.Error(w, "You must join first", http.StatusForbidden)
-				return
-			}
-			userName = userCookie.Value
 
 			desc := r.FormValue("desc")
 			diceType := r.FormValue("dice")
+
+			http.SetCookie(w, &http.Cookie{
+				Name:  "selectedDice",
+				Value: diceType,
+				Path:  "/",
+			})
 
 			sides := 20 // default
 			if diceType != "" {
@@ -214,13 +227,15 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 				}
 				subMu.Unlock()
 			}
-
+			//Post Get Redirect pattern apparently. its to stop refreshes rolling dice.
+			http.Redirect(w, r, hostPrefix+"/room/"+roomID, http.StatusSeeOther)
+			return
 		}
 	} else {
 		fmt.Println("This was not a post.")
 	}
 
-	roomData := RoomData{ID: roomID, Log: room.Log, UserName: userName, SelectedDice: selectedDice, HostPrefix: hostPrefix}
+	roomData := RoomData{ID: roomID, RoomName: room.RoomName, Log: room.Log, UserName: userName, SelectedDice: selectedDice, HostPrefix: hostPrefix}
 
 	templates.ExecuteTemplate(w, "room.html", roomData)
 }
