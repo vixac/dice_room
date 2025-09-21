@@ -73,17 +73,30 @@ function applyLogColors() {
 // --- Append a new entry to the log ---
 function appendLogEntry(m, logList) {
   const li = document.createElement("li");
-  li.className = "log-entry";
-  li.innerHTML = `
-  ${m.desc ? `<div class="desc">${m.desc}</div>` : ""}
+  li.className = "log-entry new";
+  li.innerHTML = `<div class="desc">
+    ${m.desc ? `<span class="desc-text">${m.desc}</span>` : ""}
+    <span class="dice" data-dice="${m.dice}">${m.dice}</span>
+  </div>
+  <hr class="desc-separator">
     <span class="username" data-name="${m.user}">${m.user}</span>
-    rolled a
-    <span class="dice" data-dice="${m.dice}">${m.dice}</span>:
-    <span class="result">${m.result}</span>
-    <span class="time">${m.time}</span>
+  <span class="username" data-name="${m.user}">${m.user}</span>
+  <span class="meta">rolled</span>
+  <span class="result">${m.result}</span>
+  <div class="time">${m.time}</div>
     
   `;
     logList.insertBefore(li, logList.firstChild);
+  // Force a reflow so the browser registers the starting state
+    li.offsetHeight; // ⚡ forces reflow
+    li.classList.add("animate-in");
+// trigger animation in next tick
+  
+
+  li.addEventListener("transitionend", () => {
+    li.classList.remove("new", "animate-in");
+  });
+
     applyLogColors();
  // logList.scrollTop = logList.scrollHeight;
 }
