@@ -85,9 +85,9 @@ function appendLogEntry(m, logList) {
     <span class="time">${m.time}</span>
     
   `;
-  logList.appendChild(li);
-  applyLogColors();
-  logList.scrollTop = logList.scrollHeight;
+    logList.insertBefore(li, logList.firstChild);
+    applyLogColors();
+ // logList.scrollTop = logList.scrollHeight;
 }
 
 // --- Initialize on page load ---

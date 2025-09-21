@@ -34,20 +34,9 @@
         </div>
       <button type="submit">Roll Dice</button>
     </form>
-  {{ else }}
-    
-         <!-- Join form -->
-    <form method="post" action="">
-      <input type="hidden" name="action" value="join">
-      <input type="text" name="name" placeholder="Enter your name" required>
-      <button type="submit">Enter Room</button>
-    </form>
-
-  {{ end }}
-
-  <h2>Rolls</h2>
+      <h2>Rolls</h2>
 <ul id="log">
-  {{range .Log}}
+  {{range .Log | reverse}}
     <li class="log-entry">
       {{if .Desc}}
         <div class="desc">{{.Desc}}</div>
@@ -61,6 +50,17 @@
     </li>
   {{end}}
 </ul>
+  {{ else }}
+    
+         <!-- Join form -->
+    <form method="post" action="">
+      <input type="hidden" name="action" value="join">
+      <input type="text" name="name" placeholder="Enter your name" required>
+      <button type="submit">Enter Room</button>
+    </form>
+
+  {{ end }}
+
    </div>
 </body>
 

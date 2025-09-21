@@ -77,6 +77,13 @@ var templates = template.Must(template.New("").Funcs(template.FuncMap{
 		// Allow trusted HTML into template (e.g. formatted log entries)
 		return template.HTML(s)
 	},
+	"reverse": func(xs []LogEntry) []LogEntry {
+		out := make([]LogEntry, len(xs))
+		for i := range xs {
+			out[i] = xs[len(xs)-1-i]
+		}
+		return out
+	},
 }).ParseFS(content, "templates/*.html"))
 
 // --- In-memory state ---
