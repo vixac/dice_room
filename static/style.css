@@ -53,7 +53,7 @@ button {
   transition: background 0.2s;
 }
 
-.container {
+container {
   padding: 0 16px;
   max-width: 800px;
   margin: 0 auto;
@@ -77,4 +77,99 @@ li {
   background: #1e1e1e;
   border-radius: 4px;
   font-size: 1rem;
+}
+
+/* Dice selector */
+select {
+  font-size: 1.2rem;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 0px;
+  width: 80px;
+  background-color: #222; /* neutral dark default */
+  color: #fff;
+  appearance: none; /* hide default arrow on most browsers */
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+.dice-select {
+    display: flex;
+    align-items: center;
+  font-size: 1.2rem;
+    gap: 10px; /* space between label and select */
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #222; /* dark mode base */
+  color: #fff;
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.dice-d4   { color: #ff6b6b; }  /* reddish */
+.dice-d6   { color: #4dabf7; }  /* blue */
+.dice-d8   { color: #51cf66; }  /* green */
+.dice-d10  { color: #f59f00; }  /* amber */
+.dice-d12  { color: #845ef7; }  /* purple */
+.dice-d20  { color: #22b8cf; }  /* cyan */
+
+select:hover {
+  background-color: #1ed760; /* lighter green on hover */
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #1ed760;
+}
+
+option {
+  background-color: #121212; /* dropdown bg */
+  color: #fff;              /* option text */
+  font-size: 1rem;
+}
+
+/* Log container */
+#log {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+/* Each entry */
+.log-entry {
+  display: block;
+  margin: 12px 0;
+  padding: 10px 14px;
+  background: #1e1e1e;
+  border-radius: 8px;
+}
+
+/* User name */
+.log-entry .username {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-right: 6px;
+}
+
+/* Dice type */
+.log-entry .dice {
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Result number */
+.log-entry .result {
+  font-weight: 900;
+  font-size: 1.5rem;
+  margin-left: 4px;
+}
+
+/* Time smaller & dimmer */
+.log-entry .time {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-left: 10px;
 }

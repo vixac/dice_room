@@ -10,13 +10,26 @@
 <body>
       <div class="container"></div>
   <h1>Dice Room {{.ID}}</h1>
-  
+  <a href=".." style="color:blue";>Home</a>
   {{ if .UserName }}
   <h2>Welcome {{.UserName}}</h2>
     <!-- Roll form -->
     <form method="post" action="">
+
       <input type="hidden" name="action" value="roll">
+       <input type="hidden" name="username" value="{{.UserName}}">
       <input type="text" name="desc" placeholder="What is this roll for? (optional)">
+      <div class="dice-select">
+        <label for="dice">Choose dice:</label>
+<select id="dice" name="dice">
+  <option value="d20" {{if eq .SelectedDice "d20"}}selected{{end}}>d20</option>
+  <option value="d4"  {{if eq .SelectedDice "d4"}}selected{{end}}>d4</option>
+  <option value="d6"  {{if eq .SelectedDice "d6"}}selected{{end}}>d6</option>
+  <option value="d8"  {{if eq .SelectedDice "d8"}}selected{{end}}>d8</option>
+  <option value="d10" {{if eq .SelectedDice "d10"}}selected{{end}}>d10</option>
+  <option value="d12" {{if eq .SelectedDice "d12"}}selected{{end}}>d12</option>
+</select>
+        </div>
       <button type="submit">Roll Dice</button>
     </form>
   {{ else }}
@@ -30,10 +43,10 @@
 
   {{ end }}
 
-  <h2>Log</h2>
-  <ul>
+  <h2>Rolls</h2>
+  <ul id="log">
     {{range .Log}}
-      <li>{{.}}</li>
+    <li>{{. | safeHTML}}</li>
     {{end}}
   </ul>
    </div>

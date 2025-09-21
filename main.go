@@ -57,6 +57,10 @@ var templates = template.Must(template.New("").Funcs(template.FuncMap{
 		// Always resolve to absolute `/static/...`
 		return hostPrefix + "/static/" + path
 	},
+	"safeHTML": func(s string) template.HTML {
+		// Allow trusted HTML into template (e.g. formatted log entries)
+		return template.HTML(s)
+	},
 }).ParseFS(content, "templates/*.html"))
 
 // --- In-memory state ---
@@ -67,9 +71,10 @@ type Room struct {
 }
 
 type RoomData struct {
-	ID       string
-	Log      []string
-	UserName string
+	ID           string
+	Log          []string
+	UserName     string
+	SelectedDice string
 }
 
 type NotFoundData struct {
@@ -122,6 +127,7 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 	defer room.Lock.Unlock()
 
 	var userName string = ""
+	var selectedDice = "d20"
 	if r.Method == http.MethodPost {
 		action := r.FormValue("action")
 		fmt.Println("action is " + action)
@@ -144,12 +150,30 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 			userName = userCookie.Value
 
 			desc := r.FormValue("desc")
-			dice := rand.Intn(20) + 1
-			entry := fmt.Sprintf("[%s] %s rolled a %d %s",
-				time.Now().Format("15:04:05"),
-				userName,
+			diceType := r.FormValue("dice")
+
+			sides := 20 // default
+			if diceType != "" {
+				if parsed, err := strconv.Atoi(diceType[1:]); err == nil { // strip "d"
+					sides = parsed
+				}
+				selectedDice = diceType
+			}
+			dice := rand.Intn(sides) + 1
+			descStr := desc
+			entry := fmt.Sprintf(
+				`<span class="log-entry">
+       <span class="username" data-name="%s">%s</span>
+       rolled a <span class="dice" data-dice="%s">%s</span> =
+       <span class="result">%d</span>
+       %s
+       <span class="time">%s</span>
+     </span>`,
+				userName, userName,
+				diceType, diceType,
 				dice,
-				desc,
+				descStr,
+				time.Now().Format("15:04:05"),
 			)
 			room.Log = append(room.Log, entry)
 			subMu.Lock()
@@ -166,7 +190,7 @@ func roomHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("This was not a post.")
 	}
 
-	roomData := RoomData{ID: roomID, Log: room.Log, UserName: userName}
+	roomData := RoomData{ID: roomID, Log: room.Log, UserName: userName, SelectedDice: selectedDice}
 
 	templates.ExecuteTemplate(w, "room.html", roomData)
 }
