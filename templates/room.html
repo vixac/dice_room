@@ -46,19 +46,21 @@
   {{ end }}
 
   <h2>Rolls</h2>
-  <ul id="log">
+<ul id="log">
   {{range .Log}}
     <li class="log-entry">
+      {{if .Desc}}
+        <div class="desc">{{.Desc}}</div>
+      {{end}}
       <span class="username" data-name="{{.User}}">{{.User}}</span>
-      <span class="meta"> rolled a</span>
+      <span class="meta"> rolled a </span>
       <span class="dice" data-dice="{{.Dice}}">{{.Dice}}</span>
       <span class="meta"> = </span>
       <span class="result">{{.Result}}</span>
-      {{if .Desc}} <span class="desc">({{.Desc}})</span> {{end}}
       <span class="time">{{.Time}}</span>
     </li>
   {{end}}
-  </ul>
+</ul>
    </div>
 </body>
 

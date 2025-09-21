@@ -19,6 +19,18 @@ function pickColor(name) {
   return colors[Math.abs(hash) % colors.length];
 }
 
+// --- Apply style to the dice selector itself ---
+function styleDiceSelector(select) {
+  const dice = select.value;
+  if (diceColors[dice]) {
+    select.style.backgroundColor = diceColors[dice];
+    select.style.color = "#121212"; // black text
+  } else {
+    select.style.backgroundColor = "#222"; // fallback
+    select.style.color = "#fff"; // white text
+  }
+}
+
 const diceColors = {
   d4: "#f44336",   // red
   d6: "#ff9800",   // orange
@@ -65,12 +77,13 @@ function appendLogEntry(m, logList) {
   const li = document.createElement("li");
   li.className = "log-entry";
   li.innerHTML = `
+  ${m.desc ? `<div class="desc">${m.desc}</div>` : ""}
     <span class="username" data-name="${m.user}">${m.user}</span>
     rolled a
     <span class="dice" data-dice="${m.dice}">${m.dice}</span>:
     <span class="result">${m.result}</span>
     <span class="time">${m.time}</span>
-    ${m.desc ? `<div class="desc">(${m.desc})</div>` : ""}
+    
   `;
   logList.appendChild(li);
   applyLogColors();
@@ -79,20 +92,31 @@ function appendLogEntry(m, logList) {
 
 // --- Initialize on page load ---
 document.addEventListener("DOMContentLoaded", () => {
-  const logList = document.getElementById("log");
-  if (!logList) return; // e.g. username entry page
+    const logList = document.getElementById("log");
+    const diceSelect = document.getElementById("dice");
+      // Style selector immediately on load
+    if (diceSelect) {
+        styleDiceSelector(diceSelect);
 
+    // Update color whenever the user changes dice
+        diceSelect.addEventListener("change", () => {
+        styleDiceSelector(diceSelect);
+        });
+    }
+
+    if (logList) {
   // Style server-rendered entries immediately
-  applyLogColors();
+        applyLogColors();
 
   // Connect to SSE
-  const evtSource = new EventSource(HOST_PREFIX + `/events/${ROOM_ID}`);
-  evtSource.onmessage = (event) => {
-    try {
-      const m = JSON.parse(event.data);
-      appendLogEntry(m, logList);
-    } catch (err) {
-      console.error("Invalid SSE payload", event.data, err);
+        const evtSource = new EventSource(HOST_PREFIX + `/events/${ROOM_ID}`);
+        evtSource.onmessage = (event) => {
+            try {
+                const m = JSON.parse(event.data);
+                appendLogEntry(m, logList);
+            } catch (err) {
+            console.error("Invalid SSE payload", event.data, err);
+            }
+        };
     }
-  };
 });
