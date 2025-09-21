@@ -43,15 +43,16 @@
   <div class="desc">
     {{if .Desc}}
       <span class="desc-text">{{.Desc}}</span>
+       <hr class="desc-separator">
     {{end}}
-    <span class="dice" data-dice="{{.Dice}}">{{.Dice}}</span>
+    
   </div>
-  <hr class="desc-separator">
-   
+ 
+   <span class="dice" data-dice="{{.Dice}}">{{.Dice}}</span>
       <span class="username" data-name="{{.User}}">{{.User}}</span>
       <span class="meta"> rolled </span>
       <span class="result">{{.Result}}</span>
-      <div class="time">{{.Time}}</div>
+      <span class="time">   {{.Time}}</div>
     </li>
   {{end}}
 </ul>

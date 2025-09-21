@@ -75,15 +75,15 @@ function appendLogEntry(m, logList) {
   const li = document.createElement("li");
   li.className = "log-entry new";
   li.innerHTML = `<div class="desc">
-    ${m.desc ? `<span class="desc-text">${m.desc}</span>` : ""}
-    <span class="dice" data-dice="${m.dice}">${m.dice}</span>
+    ${m.desc ? `<span class="desc-text">${m.desc}</span> <hr class="desc-separator">` : ""}
+  
   </div>
-  <hr class="desc-separator">
-    <span class="username" data-name="${m.user}">${m.user}</span>
+  
+    <span class="dice" data-dice="${m.dice}">${m.dice}</span>
   <span class="username" data-name="${m.user}">${m.user}</span>
   <span class="meta">rolled</span>
   <span class="result">${m.result}</span>
-  <div class="time">${m.time}</div>
+  <span class="time">   ${m.time}</div>
     
   `;
     logList.insertBefore(li, logList.firstChild);
