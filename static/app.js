@@ -74,19 +74,49 @@ function applyLogColors() {
 function appendLogEntry(m, logList) {
   const li = document.createElement("li");
   li.className = "log-entry new";
-  li.innerHTML = `<div class="desc">
-    ${m.desc ? `<span class="desc-text">${m.desc}</span> <hr class="desc-separator">` : ""}
-  
-  </div>
-  
-    <span class="dice" data-dice="${m.dice}">${m.dice}</span>
-  <span class="username" data-name="${m.user}">${m.user}</span>
-  <span class="meta">rolled</span>
-  <span class="result">${m.result}</span>
-  <span class="time">   ${m.time}</div>
-    
-  `;
-    logList.insertBefore(li, logList.firstChild);
+
+  const descDiv = document.createElement("div");
+  descDiv.className = "desc";
+  if (m.desc) {
+    const descSpan = document.createElement("span");
+    descSpan.className = "desc-text";
+    descSpan.textContent = m.desc;
+    const hr = document.createElement("hr");
+    hr.className = "desc-separator";
+    descDiv.appendChild(descSpan);
+    descDiv.appendChild(hr);
+  }
+
+  const diceSpan = document.createElement("span");
+  diceSpan.className = "dice";
+  diceSpan.dataset.dice = m.dice;
+  diceSpan.textContent = m.dice;
+
+  const userSpan = document.createElement("span");
+  userSpan.className = "username";
+  userSpan.dataset.name = m.user;
+  userSpan.textContent = m.user;
+
+  const metaSpan = document.createElement("span");
+  metaSpan.className = "meta";
+  metaSpan.textContent = "rolled";
+
+  const resultSpan = document.createElement("span");
+  resultSpan.className = "result";
+  resultSpan.textContent = m.result;
+
+  const timeSpan = document.createElement("span");
+  timeSpan.className = "time";
+  timeSpan.textContent = m.time;
+
+  li.appendChild(descDiv);
+  li.appendChild(diceSpan);
+  li.appendChild(userSpan);
+  li.appendChild(metaSpan);
+  li.appendChild(resultSpan);
+  li.appendChild(timeSpan);
+
+  logList.insertBefore(li, logList.firstChild);
   // Force a reflow so the browser registers the starting state
     li.offsetHeight; // ⚡ forces reflow
     li.classList.add("animate-in");
