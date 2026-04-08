@@ -10,7 +10,7 @@
   <script src="{{static "app.js"}}" defer></script>
 </head>
 <body>
-  <div class="container"></div>
+  <div class="container">
   <a href=".." style="color:blue";>Home</a>
   <h1>Room: {{.RoomName}}</h1>
     {{ if .UserName }}
@@ -52,7 +52,7 @@
       <span class="username" data-name="{{.User}}">{{.User}}</span>
       <span class="meta"> rolled </span>
       <span class="result">{{.Result}}</span>
-      <span class="time">   {{.Time}}</div>
+      <span class="time">{{.Time}}</span>
     </li>
   {{end}}
 </ul>
