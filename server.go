@@ -1,0 +1,54 @@
+package main
+
+import (
+	"embed"
+	"html/template"
+	"net/http"
+)
+
+//go:embed templates/*
+//go:embed static/*
+var content embed.FS
+
+// Server holds all dependencies and serves as the receiver for HTTP handlers.
+type Server struct {
+	store       Store
+	broadcaster *Broadcaster
+	templates   *template.Template
+	hostPrefix  string
+}
+
+func NewServer(store Store, broadcaster *Broadcaster, hostPrefix string) *Server {
+	tmpl := template.Must(template.New("").Funcs(template.FuncMap{
+		"static": func(path string) string {
+			return hostPrefix + "/static/" + path
+		},
+		"safeHTML": func(s string) template.HTML {
+			return template.HTML(s)
+		},
+		"reverse": func(xs []LogEntry) []LogEntry {
+			out := make([]LogEntry, len(xs))
+			for i := range xs {
+				out[i] = xs[len(xs)-1-i]
+			}
+			return out
+		},
+	}).ParseFS(content, "templates/*.html"))
+
+	return &Server{
+		store:       store,
+		broadcaster: broadcaster,
+		templates:   tmpl,
+		hostPrefix:  hostPrefix,
+	}
+}
+
+// routes wires all URL patterns to their handlers and returns the mux.
+func (s *Server) routes() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.Handle("/static/", http.FileServer(http.FS(content)))
+	mux.HandleFunc("/", s.indexHandler)
+	mux.HandleFunc("/room/", s.roomHandler)
+	mux.HandleFunc("/events/", s.eventsHandler)
+	return mux
+}
