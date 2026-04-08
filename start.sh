@@ -1,6 +1,11 @@
 #!/bin/bash
 #
+# ---- WITH Firbolg Gateway 
 # go run . --internalBulletPort 10 --port 1234  --hostPrefix /tbc/dice_room
+
+# ---- WITHOUT Firbolg Gateway  (no host prefix)
+# go run . --internalBulletPort 10 --port 1234  
+
 if [ -z "$1" ]
   then
         echo "You must provide a binary name"

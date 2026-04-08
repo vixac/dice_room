@@ -130,7 +130,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		roomName := strings.TrimSpace(r.FormValue("roomName"))
 		roomID := strconv.FormatInt(time.Now().UnixNano(), 36)
-		log.Printf("POST method recieved'....name is: " + roomName)
+		log.Printf("POST method recieved'....name is: '%s'\n", roomName)
 		mu.Lock()
 		if roomName == "" {
 			roomName = roomID
@@ -138,7 +138,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 		rooms[roomID] = &Room{ID: roomID, RoomName: roomName}
 		mu.Unlock()
 
-		http.Redirect(w, r, hostPrefix+"/room/"+roomID, http.StatusSeeOther)
+		redirectStr := hostPrefix + "/room/" + roomID
+		fmt.Printf("VX: REDIRECTING TO [%s]\n", redirectStr)
+		http.Redirect(w, r, redirectStr, http.StatusSeeOther)
 		return
 	}
 
@@ -148,6 +150,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func roomHandler(w http.ResponseWriter, r *http.Request) {
+
 	log.Printf("roomHandler: %s %s", r.Method, r.URL.String())
 	roomID := r.URL.Path[len("/room/"):]
 	log.Printf("room id is %s", roomID)
@@ -247,8 +250,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Error parsing args: ", err)
 	}
-
-	rand.Seed(time.Now().UnixNano())
 
 	// Serve static files
 	fs := http.FileServer(http.FS(content))
