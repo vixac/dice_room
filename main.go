@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dice_room/store/bullet_store"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,7 +15,8 @@ func main() {
 		log.Fatal("Error parsing args: ", err)
 	}
 
-	store := NewMemoryStore()
+	//store := store.NewMemoryStore()
+	store := bullet_store.NewBulletStore("VX:TODO FC CLIENT")
 	broadcaster := NewBroadcaster()
 	srv := NewServer(store, broadcaster, args.HostPrefix)
 
