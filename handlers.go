@@ -24,7 +24,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not create room", http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, s.hostPrefix+"/room/"+room.ID, http.StatusSeeOther)
+		http.Redirect(w, r, s.hostPrefix+"/room/"+room.Id, http.StatusSeeOther)
 		return
 	}
 
@@ -39,6 +39,7 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 
 	room, err := s.store.GetRoom(roomID)
 	if err != nil {
+		fmt.Printf("VX: Error is %s\n", err.Error())
 		if errors.Is(err, store.ErrRoomNotFound) {
 			w.WriteHeader(http.StatusNotFound)
 			s.templates.ExecuteTemplate(w, "not_found.html", nil)

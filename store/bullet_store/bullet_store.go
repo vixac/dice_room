@@ -3,21 +3,29 @@ package bullet_store
 import (
 	"dice_room/model"
 	"dice_room/store"
-	"errors"
 	"fmt"
+
+	"github.com/vixac/firbolg_clients/bullet/bullet_interface"
+)
+
+const (
+	roomBuckId   int32 = 3000
+	rollBucketId int32 = 3001
 )
 
 type BulletRoomStore struct {
-	Client string //VX:TODO FirbolgClient
+	Client bullet_interface.BulletClientInterface //VX:TODO FirbolgClient
 	Rooms  *RoomCollection
 	Rolls  *RollCollection
 }
 
-func NewBulletStore(client string) store.Store {
+func NewBulletStore(client bullet_interface.BulletClientInterface) store.Store {
 	fmt.Printf("VX: Using bullet store\n.")
 
-	rooms := NewRoomCollection(client)
-	rolls := NewRollCollection(client)
+	roomCodec := JSONCodec[RoomInfo]{}
+	rooms := NewRoomCollection(roomBuckId, client, &roomCodec)
+	rollCodec := JSONCodec[model.LogEntry]{}
+	rolls := NewRollCollection(rollBucketId, client, &rollCodec)
 	return &BulletRoomStore{
 		Client: client,
 		Rooms:  &rooms,
@@ -34,19 +42,33 @@ func (b *BulletRoomStore) CreateRoom(name string) (*model.Room, error) {
 	//Room can use a collection for the payloads
 	//and for the entries, we can just have another collection
 	//that uses room id as a prefix. Easy.
-	b.Rooms.CreateRoom(roomIdFor(name))
-	return nil, errors.New("Not impl")
+
+	id, err := b.Rooms.CreateRoom(name)
+
+	if err != nil {
+		return nil, err
+	}
+	return &model.Room{
+		Id:       id.Id,
+		RoomName: name,
+	}, nil
+
 }
 
 func (b *BulletRoomStore) GetRoom(id string) (*model.Room, error) {
 	roomId := roomIdFor(id)
-	room, err := b.Rooms.GetRoom(roomId)
-	if err != nil || room == nil {
+	roomInfo, err := b.Rooms.GetRoom(roomId)
+	if err != nil || roomInfo == nil {
 		return nil, err
 	}
 	logs, err := b.Rolls.RollsForRoom(roomId) //VX:TODO paging one day.
+	room := model.Room{
+		Id:       roomInfo.Id,
+		RoomName: roomInfo.Name,
+		Log:      logs,
+	}
 	room.Log = logs
-	return room, err
+	return &room, err
 }
 
 func (b *BulletRoomStore) AddEntry(roomID string, entry model.LogEntry) error {

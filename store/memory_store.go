@@ -22,7 +22,7 @@ func (s *MemoryStore) CreateRoom(name string) (*model.Room, error) {
 	if name == "" {
 		name = id
 	}
-	room := &model.Room{ID: id, RoomName: name}
+	room := &model.Room{Id: id, RoomName: name}
 	s.mu.Lock()
 	s.rooms[id] = room
 	s.mu.Unlock()

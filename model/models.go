@@ -4,7 +4,7 @@ import "sync"
 
 // Room holds the state for a single dice room.
 type Room struct {
-	ID       string
+	Id       string
 	RoomName string
 	Log      []LogEntry
 	Lock     sync.Mutex
