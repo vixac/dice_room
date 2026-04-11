@@ -4,6 +4,7 @@ import (
 	"dice_room/model"
 	"errors"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -193,7 +194,13 @@ func (r *RollCollection) RollsForRoom(id RoomId) ([]model.LogEntry, error) {
 	if !ok {
 		return nil, errors.New("wrong id returned")
 	}
-	return entries, nil
+
+	//sorted for top level first.
+	sortedItemLList := entries
+	sort.Slice(sortedItemLList, func(i, j int) bool {
+		return sortedItemLList[i].UnixMillis < sortedItemLList[j].UnixMillis
+	})
+	return sortedItemLList, nil
 
 }
 

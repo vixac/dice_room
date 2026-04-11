@@ -86,12 +86,14 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 				selectedDice = diceType
 			}
 
+			now := time.Now()
 			entry := model.LogEntry{
-				User:   userName,
-				Dice:   diceType,
-				Result: rand.Intn(sides) + 1,
-				Desc:   desc,
-				Time:   time.Now().Format("15:04:05"),
+				User:       userName,
+				Dice:       diceType,
+				Result:     rand.Intn(sides) + 1,
+				Desc:       desc,
+				Time:       now.Format("15:04:05"),
+				UnixMillis: now.UnixMilli(),
 			}
 
 			if err := s.store.AddEntry(roomID, entry); err != nil {
