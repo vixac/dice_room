@@ -3,7 +3,6 @@ package bullet_store
 import (
 	"dice_room/model"
 	"dice_room/store"
-	"fmt"
 
 	"github.com/vixac/firbolg_clients/bullet/bullet_interface"
 )
@@ -20,7 +19,6 @@ type BulletRoomStore struct {
 }
 
 func NewBulletStore(client bullet_interface.BulletClientInterface) store.Store {
-	fmt.Printf("VX: Using bullet store\n.")
 
 	roomCodec := JSONCodec[RoomInfo]{}
 	rooms := NewRoomCollection(roomBuckId, client, &roomCodec)

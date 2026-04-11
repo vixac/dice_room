@@ -2,7 +2,6 @@ package bullet_store
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -52,7 +51,6 @@ func (r *RoomCollection) CreateRoom(name string) (*RoomId, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("VX: created room %s, %s\n", id, encoded)
 	_, err = r.Collection.CreateItemUnder(id, encoded, &now)
 	if err != nil {
 		return nil, err
@@ -60,9 +58,6 @@ func (r *RoomCollection) CreateRoom(name string) (*RoomId, error) {
 	return &RoomId{Id: id}, nil
 }
 
-//VX:TODO split this out so that the roomifno is whats beign served up here.
-
-// VX:TODO dont return room as rooms have logentires and this doesnt. Make a type
 func (r *RoomCollection) GetRoom(id RoomId) (*RoomInfo, error) {
 
 	items, err := r.Collection.ItemsForKeys([]string{id.Id})
@@ -74,7 +69,6 @@ func (r *RoomCollection) GetRoom(id RoomId) (*RoomInfo, error) {
 	}
 
 	for k, v := range items {
-		fmt.Printf("VX: KEY IS %s, payload %s\n", k.Key, v.Payload)
 		if id.Id != k.Key {
 			return nil, errors.New("wrong room fetched")
 		}
@@ -83,7 +77,6 @@ func (r *RoomCollection) GetRoom(id RoomId) (*RoomInfo, error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("VX: info is %+v", info)
 		return &info, err
 	}
 	return nil, errors.New("Room not found")
