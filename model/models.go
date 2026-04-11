@@ -1,10 +1,10 @@
-package main
+package model
 
 import "sync"
 
 // Room holds the state for a single dice room.
 type Room struct {
-	ID       string
+	Id       string
 	RoomName string
 	Log      []LogEntry
 	Lock     sync.Mutex
@@ -12,11 +12,12 @@ type Room struct {
 
 // LogEntry is one roll event. JSON tags are used for SSE broadcasting.
 type LogEntry struct {
-	User   string `json:"user"`
-	Dice   string `json:"dice"`
-	Result int    `json:"result"`
-	Desc   string `json:"desc,omitempty"`
-	Time   string `json:"time"`
+	User       string `json:"user"`
+	Dice       string `json:"dice"`
+	Result     int    `json:"result"`
+	Desc       string `json:"desc,omitempty"`
+	Time       string `json:"time"`
+	UnixMillis int64  `json:"unixMillis"`
 }
 
 // RoomData is the view model passed to room.html.

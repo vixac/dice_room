@@ -1,6 +1,8 @@
 package main
 
 import (
+	"dice_room/model"
+	"dice_room/store"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -22,7 +24,7 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not create room", http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, s.hostPrefix+"/room/"+room.ID, http.StatusSeeOther)
+		http.Redirect(w, r, s.hostPrefix+"/room/"+room.Id, http.StatusSeeOther)
 		return
 	}
 
@@ -37,7 +39,8 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 
 	room, err := s.store.GetRoom(roomID)
 	if err != nil {
-		if errors.Is(err, ErrRoomNotFound) {
+		fmt.Printf("VX: Error is %s\n", err.Error())
+		if errors.Is(err, store.ErrRoomNotFound) {
 			w.WriteHeader(http.StatusNotFound)
 			s.templates.ExecuteTemplate(w, "not_found.html", nil)
 		} else {
@@ -83,12 +86,14 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 				selectedDice = diceType
 			}
 
-			entry := LogEntry{
-				User:   userName,
-				Dice:   diceType,
-				Result: rand.Intn(sides) + 1,
-				Desc:   desc,
-				Time:   time.Now().Format("15:04:05"),
+			now := time.Now()
+			entry := model.LogEntry{
+				User:       userName,
+				Dice:       diceType,
+				Result:     rand.Intn(sides) + 1,
+				Desc:       desc,
+				Time:       now.Format("15:04:05"),
+				UnixMillis: now.UnixMilli(),
 			}
 
 			if err := s.store.AddEntry(roomID, entry); err != nil {
@@ -108,11 +113,11 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Copy log under lock so we don't hold it during template rendering.
 	room.Lock.Lock()
-	logSnapshot := make([]LogEntry, len(room.Log))
+	logSnapshot := make([]model.LogEntry, len(room.Log))
 	copy(logSnapshot, room.Log)
 	room.Lock.Unlock()
 
-	data := RoomData{
+	data := model.RoomData{
 		ID:           roomID,
 		RoomName:     room.RoomName,
 		Log:          logSnapshot,

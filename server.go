@@ -1,6 +1,8 @@
 package main
 
 import (
+	"dice_room/model"
+	"dice_room/store"
 	"embed"
 	"html/template"
 	"net/http"
@@ -12,13 +14,13 @@ var content embed.FS
 
 // Server holds all dependencies and serves as the receiver for HTTP handlers.
 type Server struct {
-	store       Store
+	store       store.Store
 	broadcaster *Broadcaster
 	templates   *template.Template
 	hostPrefix  string
 }
 
-func NewServer(store Store, broadcaster *Broadcaster, hostPrefix string) *Server {
+func NewServer(store store.Store, broadcaster *Broadcaster, hostPrefix string) *Server {
 	tmpl := template.Must(template.New("").Funcs(template.FuncMap{
 		"static": func(path string) string {
 			return hostPrefix + "/static/" + path
@@ -26,8 +28,8 @@ func NewServer(store Store, broadcaster *Broadcaster, hostPrefix string) *Server
 		"safeHTML": func(s string) template.HTML {
 			return template.HTML(s)
 		},
-		"reverse": func(xs []LogEntry) []LogEntry {
-			out := make([]LogEntry, len(xs))
+		"reverse": func(xs []model.LogEntry) []model.LogEntry {
+			out := make([]model.LogEntry, len(xs))
 			for i := range xs {
 				out[i] = xs[len(xs)-1-i]
 			}
