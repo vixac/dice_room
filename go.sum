@@ -1,6 +1,6 @@
 github.com/mattn/go-sqlite3 v1.14.32 h1:JD12Ag3oLy1zQA+BNn74xRgaBbdhbNIDYvQUEuuErjs=
 github.com/mattn/go-sqlite3 v1.14.32/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=
-github.com/vixac/bullet v0.2.4 h1:VcOQE5i/X1LMiXAaKE2xPZCCO/2vTBJNND0UioM8U4I=
-github.com/vixac/bullet v0.2.4/go.mod h1:Mj8bt3emmXNaSfd6DbgIyH+GmVhkIhiJbSaWFwrVnv4=
-github.com/vixac/firbolg_clients v0.2.11 h1:YN237zuPHIW3WrjLBKngTK7tW+bnb2u+RbnZocdfSrk=
-github.com/vixac/firbolg_clients v0.2.11/go.mod h1:Zb+DHozB63WOum2lLAopFARzMvuIe2DwQ561PxzJceU=
+github.com/vixac/bullet v0.2.5 h1:K+pKLFgwYnJhtmlPHvyvaErOj7BV/b7RQJJbyN5Jjzw=
+github.com/vixac/bullet v0.2.5/go.mod h1:lSVkz0OFe4UqCj13ID1LjOWl12RGKFS3WKUO8rZhbok=
+github.com/vixac/firbolg_clients v0.2.15 h1:4R6adRU8E37Jg2Fu/j0/f/olfixZ6uN4iBPf5y5GulQ=
+github.com/vixac/firbolg_clients v0.2.15/go.mod h1:2eekRodVsrqCfhQhDy32xyw9TB1Ab+szWXfmyMnnUss=
