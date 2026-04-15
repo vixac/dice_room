@@ -13,7 +13,7 @@ const (
 )
 
 type BulletRoomStore struct {
-	Client bullet_interface.BulletClientInterface //VX:TODO FirbolgClient
+	Client bullet_interface.BulletClientInterface
 	Rooms  *RoomCollection
 	Rolls  *RollCollection
 }
