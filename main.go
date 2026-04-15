@@ -11,7 +11,6 @@ import (
 
 	"github.com/vixac/bullet/store/store_interface"
 
-	"github.com/vixac/firbolg_clients/bullet/local_bullet"
 	"github.com/vixac/firbolg_clients/bullet/rest_bullet"
 )
 
@@ -24,7 +23,7 @@ func buildBullet(bulletPort int) store.Store {
 	fmt.Printf("Building bullet local")
 	space := store_interface.TenancySpace{
 		AppId:     5000,
-		TenancyId: 0,
+		TenancyId: 1234,
 	}
 
 	logger := log.New(os.Stdout, "", log.LstdFlags)
@@ -42,25 +41,12 @@ func buildBullet(bulletPort int) store.Store {
 
 func main() {
 
-	space := store_interface.TenancySpace{
-		AppId:     1234,
-		TenancyId: 0,
-	}
 	fmt.Printf("Dice Room begins...\n")
 	args, err := ReadArgs()
 	if err != nil {
 		log.Fatal("Error parsing args: ", err)
 	}
 
-	localBullet := local_bullet.LocalBullet{
-		Space: space,
-	}
-	fmt.Printf("VX:local bullet %s\n", localBullet.Space)
-
-	//ene, err := grove_engine.NewGroveEngine(&localBullet)
-	//ene, err := grove_engine.NewGroveEngine(restClient)
-
-	//
 	broadcaster := NewBroadcaster()
 
 	store := buildBullet(args.BulletPort)
