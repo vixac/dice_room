@@ -66,7 +66,7 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, &http.Cookie{
 				Name:  "username",
 				Value: userName,
-				Path:  "/room/" + roomID,
+				Path:  s.hostPrefix + "/room/" + roomID,
 			})
 
 		case "roll":
