@@ -105,8 +105,10 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 				s.broadcaster.Send(roomID, string(b))
 			}
 
+			redirect := s.hostPrefix + "/room/" + roomID
+			fmt.Printf(" redirecting to %s\n", redirect)
 			// Post/Redirect/Get: prevents double-roll on browser refresh.
-			http.Redirect(w, r, s.hostPrefix+"/room/"+roomID, http.StatusSeeOther)
+			http.Redirect(w, r, redirect, http.StatusSeeOther)
 			return
 		}
 	}
