@@ -50,12 +50,8 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userName := ""
-	selectedDice := "d20"
 	if cookie, err := r.Cookie("username"); err == nil {
 		userName = cookie.Value
-	}
-	if cookie, err := r.Cookie("selectedDice"); err == nil {
-		selectedDice = cookie.Value
 	}
 
 	if r.Method == http.MethodPost {
@@ -64,26 +60,23 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 		case "join":
 			userName = r.FormValue("name")
 			http.SetCookie(w, &http.Cookie{
-				Name:  "username",
-				Value: userName,
-				Path:  s.hostPrefix + "/room/" + roomID,
+				Name:     "username",
+				Value:    userName,
+				Path:     s.hostPrefix + "/room/" + roomID,
+				HttpOnly: true,
+				Secure:   s.secureCookies,
+				SameSite: http.SameSiteLaxMode,
 			})
 
 		case "roll":
 			desc := r.FormValue("desc")
 			diceType := r.FormValue("dice")
-			http.SetCookie(w, &http.Cookie{
-				Name:  "selectedDice",
-				Value: diceType,
-				Path:  "/",
-			})
 
 			sides := 20
 			if diceType != "" {
 				if parsed, err := strconv.Atoi(diceType[1:]); err == nil {
 					sides = parsed
 				}
-				selectedDice = diceType
 			}
 
 			now := time.Now()
@@ -120,12 +113,11 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 	room.Lock.Unlock()
 
 	data := model.RoomData{
-		ID:           roomID,
-		RoomName:     room.RoomName,
-		Log:          logSnapshot,
-		UserName:     userName,
-		SelectedDice: selectedDice,
-		HostPrefix:   s.hostPrefix,
+		ID:         roomID,
+		RoomName:   room.RoomName,
+		Log:        logSnapshot,
+		UserName:   userName,
+		HostPrefix: s.hostPrefix,
 	}
 	s.templates.ExecuteTemplate(w, "room.html", data)
 }

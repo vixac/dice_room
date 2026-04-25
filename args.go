@@ -11,6 +11,7 @@ type Args struct {
 	Port       int
 	BulletPort int
 	HostPrefix string
+	Dev        bool
 }
 
 func ReadArgs() (*Args, error) {
@@ -18,6 +19,7 @@ func ReadArgs() (*Args, error) {
 	internalBulletPort := flag.String("internalBulletPort", "", "port number to reach internal bullet")
 	port := flag.String("port", "", "port number to run on")
 	hostPrefix := flag.String("hostPrefix", "", "the /tbc/dice_room component of the url which is needed because firbolg_gateway trims it down.")
+	dev := flag.Bool("dev", false, "dev mode: disables Secure flag on cookies so the site works over plain HTTP on localhost")
 
 	flag.Parse()
 	if *internalBulletPort == "" {
@@ -45,5 +47,9 @@ func ReadArgs() (*Args, error) {
 	args.Port = portInt
 	args.BulletPort = internalBulletPortInt
 	args.HostPrefix = *hostPrefix
+	args.Dev = *dev
+	if args.Dev {
+		fmt.Println("WARNING: dev mode enabled — cookies are not Secure, do not use in production")
+	}
 	return &args, nil
 }

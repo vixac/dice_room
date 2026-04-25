@@ -22,10 +22,9 @@ type LogEntry struct {
 
 // RoomData is the view model passed to room.html.
 type RoomData struct {
-	ID           string
-	RoomName     string
-	Log          []LogEntry
-	UserName     string
-	SelectedDice string
-	HostPrefix   string
+	ID         string
+	RoomName   string
+	Log        []LogEntry
+	UserName   string
+	HostPrefix string
 }

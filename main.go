@@ -50,7 +50,7 @@ func main() {
 	broadcaster := NewBroadcaster()
 
 	store := buildBullet(args.BulletPort)
-	srv := NewServer(store, broadcaster, args.HostPrefix)
+	srv := NewServer(store, broadcaster, args.HostPrefix, !args.Dev)
 
 	addr := ":" + strconv.Itoa(args.Port)
 	log.Println("Listening on " + addr)

@@ -14,13 +14,14 @@ var content embed.FS
 
 // Server holds all dependencies and serves as the receiver for HTTP handlers.
 type Server struct {
-	store       store.Store
-	broadcaster *Broadcaster
-	templates   *template.Template
-	hostPrefix  string
+	store         store.Store
+	broadcaster   *Broadcaster
+	templates     *template.Template
+	hostPrefix    string
+	secureCookies bool
 }
 
-func NewServer(store store.Store, broadcaster *Broadcaster, hostPrefix string) *Server {
+func NewServer(store store.Store, broadcaster *Broadcaster, hostPrefix string, secureCookies bool) *Server {
 	tmpl := template.Must(template.New("").Funcs(template.FuncMap{
 		"static": func(path string) string {
 			return hostPrefix + "/static/" + path
@@ -38,10 +39,11 @@ func NewServer(store store.Store, broadcaster *Broadcaster, hostPrefix string) *
 	}).ParseFS(content, "templates/*.html"))
 
 	return &Server{
-		store:       store,
-		broadcaster: broadcaster,
-		templates:   tmpl,
-		hostPrefix:  hostPrefix,
+		store:         store,
+		broadcaster:   broadcaster,
+		templates:     tmpl,
+		hostPrefix:    hostPrefix,
+		secureCookies: secureCookies,
 	}
 }
 
