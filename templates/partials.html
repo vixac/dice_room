@@ -1,0 +1,17 @@
+{{define "cookie-banner"}}
+<div id="cookie-banner" style="display:none">
+  <p>This site uses one functional cookie per room to remember your username. No tracking, no advertising. <a href="/privacy">Learn more</a></p>
+  <button onclick="dismissCookieBanner()">Got it</button>
+</div>
+<script>
+  (function() {
+    if (!localStorage.getItem("cookieNoticeDismissed")) {
+      document.getElementById("cookie-banner").style.display = "flex";
+    }
+  })();
+  function dismissCookieBanner() {
+    localStorage.setItem("cookieNoticeDismissed", "1");
+    document.getElementById("cookie-banner").style.display = "none";
+  }
+</script>
+{{end}}
