@@ -20,11 +20,16 @@ type LogEntry struct {
 	UnixMillis int64  `json:"unixMillis"`
 }
 
+// PageData is the base view model passed to all templates.
+type PageData struct {
+	HostPrefix string
+}
+
 // RoomData is the view model passed to room.html.
 type RoomData struct {
-	ID         string
-	RoomName   string
-	Log        []LogEntry
-	UserName   string
-	HostPrefix string
+	PageData
+	ID       string
+	RoomName string
+	Log      []LogEntry
+	UserName string
 }
