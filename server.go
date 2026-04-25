@@ -52,5 +52,6 @@ func (s *Server) routes() *http.ServeMux {
 	mux.HandleFunc("/", s.indexHandler)
 	mux.HandleFunc("/room/", s.roomHandler)
 	mux.HandleFunc("/events/", s.eventsHandler)
+	mux.HandleFunc("/privacy", s.privacyHandler)
 	return mux
 }
