@@ -6,6 +6,7 @@ import (
 	"embed"
 	"html/template"
 	"net/http"
+	"strings"
 )
 
 //go:embed templates/*
@@ -23,9 +24,6 @@ type Server struct {
 
 func NewServer(store store.Store, broadcaster *Broadcaster, hostPrefix string, secureCookies bool) *Server {
 	tmpl := template.Must(template.New("").Funcs(template.FuncMap{
-		"static": func(path string) string {
-			return hostPrefix + "/static/" + path
-		},
 		"safeHTML": func(s string) template.HTML {
 			return template.HTML(s)
 		},
@@ -45,6 +43,17 @@ func NewServer(store store.Store, broadcaster *Broadcaster, hostPrefix string, s
 		hostPrefix:    hostPrefix,
 		secureCookies: secureCookies,
 	}
+}
+
+// prefixFor returns the URL path prefix for the current request.
+// It reads X-Forwarded-Prefix set by a reverse proxy (e.g. "/tbc/dice_room"),
+// falling back to the static --hostPrefix flag. This lets one running instance
+// serve both a prefixed gateway path and a bare custom domain simultaneously.
+func (s *Server) prefixFor(r *http.Request) string {
+	if fwd := strings.TrimRight(r.Header.Get("X-Forwarded-Prefix"), "/"); fwd != "" {
+		return fwd
+	}
+	return s.hostPrefix
 }
 
 // routes wires all URL patterns to their handlers and returns the mux.

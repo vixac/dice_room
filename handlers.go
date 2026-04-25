@@ -24,11 +24,11 @@ func (s *Server) indexHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Could not create room", http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, s.hostPrefix+"/room/"+room.Id, http.StatusSeeOther)
+		http.Redirect(w, r, s.prefixFor(r)+"/room/"+room.Id, http.StatusSeeOther)
 		return
 	}
 
-	if err := s.templates.ExecuteTemplate(w, "index.html", nil); err != nil {
+	if err := s.templates.ExecuteTemplate(w, "index.html", model.PageData{HostPrefix: s.prefixFor(r)}); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 	}
 }
@@ -42,7 +42,7 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("VX: Error is %s\n", err.Error())
 		if errors.Is(err, store.ErrRoomNotFound) {
 			w.WriteHeader(http.StatusNotFound)
-			s.templates.ExecuteTemplate(w, "not_found.html", nil)
+			s.templates.ExecuteTemplate(w, "not_found.html", model.PageData{HostPrefix: s.prefixFor(r)})
 		} else {
 			http.Error(w, "Internal error", http.StatusInternalServerError)
 		}
@@ -62,7 +62,7 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, &http.Cookie{
 				Name:     "username",
 				Value:    userName,
-				Path:     s.hostPrefix + "/room/" + roomID,
+				Path:     s.prefixFor(r) + "/room/" + roomID,
 				HttpOnly: true,
 				Secure:   s.secureCookies,
 				SameSite: http.SameSiteLaxMode,
@@ -98,7 +98,7 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 				s.broadcaster.Send(roomID, string(b))
 			}
 
-			redirect := s.hostPrefix + "/room/" + roomID
+			redirect := s.prefixFor(r) + "/room/" + roomID
 			fmt.Printf(" redirecting to %s\n", redirect)
 			// Post/Redirect/Get: prevents double-roll on browser refresh.
 			http.Redirect(w, r, redirect, http.StatusSeeOther)
@@ -113,29 +113,29 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 	room.Lock.Unlock()
 
 	data := model.RoomData{
-		ID:         roomID,
-		RoomName:   room.RoomName,
-		Log:        logSnapshot,
-		UserName:   userName,
-		HostPrefix: s.hostPrefix,
+		PageData: model.PageData{HostPrefix: s.prefixFor(r)},
+		ID:       roomID,
+		RoomName: room.RoomName,
+		Log:      logSnapshot,
+		UserName: userName,
 	}
 	s.templates.ExecuteTemplate(w, "room.html", data)
 }
 
 func (s *Server) privacyHandler(w http.ResponseWriter, r *http.Request) {
-	if err := s.templates.ExecuteTemplate(w, "privacy.html", nil); err != nil {
+	if err := s.templates.ExecuteTemplate(w, "privacy.html", model.PageData{HostPrefix: s.prefixFor(r)}); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 	}
 }
 
 func (s *Server) termsHandler(w http.ResponseWriter, r *http.Request) {
-	if err := s.templates.ExecuteTemplate(w, "terms.html", nil); err != nil {
+	if err := s.templates.ExecuteTemplate(w, "terms.html", model.PageData{HostPrefix: s.prefixFor(r)}); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 	}
 }
 
 func (s *Server) contactHandler(w http.ResponseWriter, r *http.Request) {
-	if err := s.templates.ExecuteTemplate(w, "contact.html", nil); err != nil {
+	if err := s.templates.ExecuteTemplate(w, "contact.html", model.PageData{HostPrefix: s.prefixFor(r)}); err != nil {
 		http.Error(w, "Template error", http.StatusInternalServerError)
 	}
 }

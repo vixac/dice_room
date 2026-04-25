@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # ---- WITH Firbolg Gateway 
-# go run . --internalBulletPort 10 --port 1234  --hostPrefix /tbc/dice_room  --dev
+# go run . --internalBulletPort 10 --port 1234 --dev
 
 # ---- WITHOUT Firbolg Gateway  (no host prefix)
 # go run . --internalBulletPort 10 --port 1234  --dev
@@ -12,4 +12,4 @@ if [ -z "$1" ]
         exit 1
 fi
 echo "Dice_room starting on $1 and we are in $(eval pwd)"
-./$1 --internalBulletPort $BULLET_PORT --port $DICE_ROOM_PORT  --hostPrefix $DICE_ROOM_LOCATION
+./$1 --internalBulletPort $BULLET_PORT --port $DICE_ROOM_PORT  

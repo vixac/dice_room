@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dice Room {{.ID}}</title>
-  <link rel="stylesheet" href="{{static "style.css"}}">
+  <link rel="stylesheet" href="{{.HostPrefix}}/static/style.css">
   <script>const ROOM_ID = "{{.ID}}";</script>
   <script>const HOST_PREFIX = "{{.HostPrefix}}";</script>
-  <script src="{{static "app.js"}}" defer></script>
+  <script src="{{.HostPrefix}}/static/app.js" defer></script>
 </head>
 <body>
   <div class="container">
