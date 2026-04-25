@@ -130,6 +130,12 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 	s.templates.ExecuteTemplate(w, "room.html", data)
 }
 
+func (s *Server) privacyHandler(w http.ResponseWriter, r *http.Request) {
+	if err := s.templates.ExecuteTemplate(w, "privacy.html", nil); err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+	}
+}
+
 func (s *Server) eventsHandler(w http.ResponseWriter, r *http.Request) {
 	roomID := strings.TrimPrefix(r.URL.Path, "/events/")
 
