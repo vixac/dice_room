@@ -278,6 +278,22 @@ h1 + .policy-meta {
   text-decoration: underline;
 }
 
+#share-btn {
+  background-color: transparent;
+  border: 1px solid #1db954;
+  color: #1db954;
+  font-weight: normal;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  width: auto;
+}
+
+#share-btn:hover {
+  background-color: #1db954;
+  color: #000;
+}
+
 #cookie-banner {
   position: fixed;
   bottom: 0;
