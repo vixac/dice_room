@@ -1,9 +1,6 @@
 #!/bin/bash
-#
-# ---- WITH Firbolg Gateway 
-# go run . --internalBulletPort 10 --port 1234 --dev
 
-# ---- WITHOUT Firbolg Gateway  (no host prefix)
+# DEV
 # go run . --internalBulletPort 10 --port 1234  --dev
 
 if [ -z "$1" ]
