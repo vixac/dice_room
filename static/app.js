@@ -1,6 +1,10 @@
-// Minimal JS (optional: could use htmx or websockets later)
-// Right now, it's just a placeholder.
-console.log("Dice app JS loaded");
+function copyRoomLink() {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    const btn = document.getElementById("share-btn");
+    btn.textContent = "Copied!";
+    setTimeout(() => { btn.textContent = "Copy room link"; }, 2000);
+  });
+}
 
 function hashString(str) {
   let hash = 0;
