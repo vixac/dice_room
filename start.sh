@@ -1,10 +1,10 @@
 #!/bin/bash
 #
 # ---- WITH Firbolg Gateway 
-# go run . --internalBulletPort 10 --port 1234  --hostPrefix /tbc/dice_room
+# go run . --internalBulletPort 10 --port 1234  --hostPrefix /tbc/dice_room  --dev
 
 # ---- WITHOUT Firbolg Gateway  (no host prefix)
-# go run . --internalBulletPort 10 --port 1234  
+# go run . --internalBulletPort 10 --port 1234  --dev
 
 if [ -z "$1" ]
   then

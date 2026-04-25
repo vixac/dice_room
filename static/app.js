@@ -137,11 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const diceSelect = document.getElementById("dice");
       // Style selector immediately on load
     if (diceSelect) {
+        // Restore saved preference (localStorage stays in the browser, never sent to server)
+        const saved = localStorage.getItem("selectedDice");
+        if (saved) {
+            diceSelect.value = saved;
+        }
         styleDiceSelector(diceSelect);
 
-    // Update color whenever the user changes dice
         diceSelect.addEventListener("change", () => {
-        styleDiceSelector(diceSelect);
+            localStorage.setItem("selectedDice", diceSelect.value);
+            styleDiceSelector(diceSelect);
         });
     }
 
